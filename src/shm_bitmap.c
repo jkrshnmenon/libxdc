@@ -51,6 +51,9 @@ int copy_topa_buffer(char *src, size_t size) {
     // Hopefully this doesn't crash libxdc
     // But I don't care about filters
     decoder_result_t ret = libxdc_decode(decoder, dst, size);
+
+    free(dst);
+
     switch (ret) {
         case decoder_success:
             debug_print("decoder_success\n");
