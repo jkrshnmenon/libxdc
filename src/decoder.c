@@ -354,6 +354,7 @@ static inline uint64_t get_val(uint8_t **pp, uint8_t len){
 
 
 static inline void disasm(decoder_t* self){
+#ifdef DISASM
 	static uint64_t failed_page = 0;
 	should_disasm_t* res = self->decoder_state_result;
 	if(res->valid && (!is_empty_tnt_cache(self->tnt_cache_state) || self->disassembler_state->trace_mode)){
@@ -363,6 +364,8 @@ static inline void disasm(decoder_t* self){
 				self->page_fault_addr = failed_page;
 			}
 	}
+#endif
+	return;
 }
 
 
@@ -925,6 +928,7 @@ __attribute__((hot)) decoder_result_t decode_buffer(decoder_t* self, uint8_t* ma
 
 	handle_pt_exit:
 
+#ifdef CHECK
 	if (count_tnt(self->tnt_cache_state) != 0){
 #ifndef LIBFUZZER
 		fprintf(stderr, "\nERR: \tTNT %d\n", count_tnt(self->tnt_cache_state));
@@ -932,6 +936,7 @@ __attribute__((hot)) decoder_result_t decode_buffer(decoder_t* self, uint8_t* ma
 		pt_decoder_flush(self);
 		return decoder_error;
 	}
+#endif
 
 	if(self->disassembler_state->infinite_loop_found){
 		abort();
