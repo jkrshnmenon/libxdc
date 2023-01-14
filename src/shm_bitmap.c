@@ -1,8 +1,19 @@
 #include "shm_bitmap.h"
+#include "afl_hash.h"
 
 void *page_cache_fetch(void *ptr, uint64_t page, bool *success) {
     // Hopefully this doesn't break anything
     *success = true;
+}
+
+void update_bitmap(void *opaque, uint64_t cur_loc, uint64_t cofi_addr) {
+    cur_loc = (uint64_t)(afl_hash_ip((uint64_t)cur_loc));
+    cur_loc &= (MAP_SIZE - 1);      
+
+    uint64_t afl_idx = cur_loc ^ afl_prev_loc;
+    trace_map[afl_idx]++;
+
+    afl_prev_loc = cur_loc >> 1;    
 }
 
 int create_shared_bitmap() {
@@ -22,7 +33,8 @@ int create_shared_bitmap() {
 
     uint64_t filter[4][2] = {0};
     decoder = libxdc_init(filter, &page_cache_fetch, NULL, trace_map, MAP_SIZE);
-
+    libxdc_register_bb_callback(decoder, update_bitmap, (void *)NULL);
+    afl_prev_loc = 0;
     debug_print("Mapped shared bitmap @ 0x%lx\n", trace_map);
     return 0;
 }
