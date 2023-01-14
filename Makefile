@@ -7,7 +7,7 @@ PREFIX ?= /usr
 ODIR=build
 SDIR=src
 
-_OBJ = cfg.o disassembler.o tnt_cache.o decoder.o libxdc.o mmh3.o trace_cache.o
+_OBJ = cfg.o disassembler.o tnt_cache.o decoder.o libxdc.o mmh3.o trace_cache.o shm_bitmap.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 default: libxdc.so libxdc.a
