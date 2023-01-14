@@ -1,5 +1,6 @@
 CC ?= gcc
 CFLAGS += -Ofast -fPIC -fvisibility=hidden -flto -finline-functions #-fprofile-use=program.gcda #-fprofile-generate #-g -fsanitize=address 
+# CFLAGS += -DDEBUG_TRACES -fPIC -g
 LDFLAGS += -flto
 PREFIX ?= /usr
 
