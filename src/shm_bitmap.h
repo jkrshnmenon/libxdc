@@ -13,15 +13,13 @@
 #define MAP_SIZE         0x10000
 #define PT_TRACE_END			__extension__ 0b01010101
 
-#ifdef BITMAP_DEBUG
-#define debug_print(msg, ...) (fprintf(stderr, msg, ##__VA_ARGS__))
-#else
-#define debug_print(msg, ...) (void)0
-#endif
-
 char *trace_map;
 libxdc_t* decoder;
-uint64_t afl_prev_loc
+uint64_t afl_prev_loc;
+
+// Debug support
+void enable_debug();
+void debug_print(char *fmt, ...);
 
 // Just a dummy function to make libxdc happy
 void *page_cache_fetch(void *, uint64_t, bool *);

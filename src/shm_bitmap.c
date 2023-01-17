@@ -1,12 +1,30 @@
 #include "shm_bitmap.h"
 #include "afl_hash.h"
 
+bool debug = false;
+
+void enable_debug() {
+    debug = true;
+}
+
+void debug_print(char * fmt, ...)
+{
+    if (debug == false)
+        return;
+    va_list argptr;
+    va_start(argptr,fmt);
+    vfprintf(stderr, fmt, argptr);
+    va_end(argptr);
+}
+
+
 void *page_cache_fetch(void *ptr, uint64_t page, bool *success) {
     // Hopefully this doesn't break anything
     *success = true;
 }
 
 void update_bitmap(void *opaque, uint64_t cur_loc, uint64_t cofi_addr) {
+    debug_print("cur_loc: 0x%lx\n", cur_loc);
     cur_loc = (uint64_t)(afl_hash_ip((uint64_t)cur_loc));
     cur_loc &= (MAP_SIZE - 1);      
 
