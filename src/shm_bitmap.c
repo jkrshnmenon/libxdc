@@ -48,8 +48,16 @@ int create_shared_bitmap() {
         perror("shmat:");
         return -1;
     }
+    return 0;
+}
 
+int init_decoder() {
+    if ( trace_map == NULL ) {
+        fprintf(stderr, "trace_map has not been initialized\n");
+        return -1;
+    }
     uint64_t filter[4][2] = {0};
+    memset(trace_map, 0, MAP_SIZE);
     decoder = libxdc_init(filter, &page_cache_fetch, NULL, trace_map, MAP_SIZE);
     libxdc_register_bb_callback(decoder, update_bitmap, (void *)NULL);
     afl_prev_loc = 0;

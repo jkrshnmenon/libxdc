@@ -13,7 +13,8 @@
 #define MAP_SIZE         0x10000
 #define PT_TRACE_END			__extension__ 0b01010101
 
-char *trace_map;
+char dummy[MAP_SIZE];
+char *trace_map = &dummy;
 libxdc_t* decoder;
 uint64_t afl_prev_loc;
 
