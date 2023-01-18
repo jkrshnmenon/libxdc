@@ -4,6 +4,8 @@
 bool debug = false;
 
 void enable_debug() {
+    FILE *fp = fopen("/tmp/xdc_log", "w");
+    fclose(fp);
     debug = true;
 }
 
@@ -11,10 +13,12 @@ void debug_print(char * fmt, ...)
 {
     if (debug == false)
         return;
+    FILE *fp = fopen("/tmp/xdc_log", "a");
     va_list argptr;
     va_start(argptr,fmt);
-    vfprintf(stderr, fmt, argptr);
+    vfprintf(fp, fmt, argptr);
     va_end(argptr);
+    fclose(fp);
 }
 
 
@@ -81,7 +85,9 @@ int copy_topa_buffer(char *src, size_t size) {
     }
 
     // Copy the topa buffer into the new buffer
+    debug_print("Copying 0x%lx -> 0x%lx\n", src, dst);
     memcpy(src, dst, size);
+    debug_print("Done Copying 0x%lx -> 0x%lx\n", src, dst);
 
     // Append the bytes that libxdc wants to see
     ((uint8_t*)dst)[size] = PT_TRACE_END;
