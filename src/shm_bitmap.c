@@ -86,8 +86,8 @@ int copy_topa_buffer(char *src, size_t size) {
 
     // Copy the topa buffer into the new buffer
     xdc_debug_print("Copying 0x%lx -> 0x%lx\n", src, dst);
-    memcpy(src, dst, size);
-    xdc_debug_print("Done Copying 0x%lx -> 0x%lx\n", src, dst);
+    memcpy(dst, src, size);
+    xdc_debug_print("Done copying 0x%lx -> 0x%lx\n", src, dst);
 
     // Append the bytes that libxdc wants to see
     ((uint8_t*)dst)[size] = PT_TRACE_END;
