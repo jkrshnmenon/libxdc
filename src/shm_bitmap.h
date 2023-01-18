@@ -14,13 +14,13 @@
 #define PT_TRACE_END			__extension__ 0b01010101
 
 char dummy[MAP_SIZE];
-char *trace_map = &dummy;
 libxdc_t* decoder;
 uint64_t afl_prev_loc;
 
+
 // Debug support
-void enable_debug();
-void debug_print(char *fmt, ...);
+void enable_xdc_debug();
+void xdc_debug_print(char *fmt, ...);
 
 // Just a dummy function to make libxdc happy
 void *page_cache_fetch(void *, uint64_t, bool *);

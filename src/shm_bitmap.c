@@ -1,17 +1,18 @@
 #include "shm_bitmap.h"
 #include "afl_hash.h"
 
-bool debug = false;
+bool xdc_debug = false;
+char *trace_map = &dummy;
 
-void enable_debug() {
+void enable_xdc_debug() {
     FILE *fp = fopen("/tmp/xdc_log", "w");
     fclose(fp);
-    debug = true;
+    xdc_debug = true;
 }
 
-void debug_print(char * fmt, ...)
+void xdc_debug_print(char * fmt, ...)
 {
-    if (debug == false)
+    if (xdc_debug == false)
         return;
     FILE *fp = fopen("/tmp/xdc_log", "a");
     va_list argptr;
@@ -21,14 +22,13 @@ void debug_print(char * fmt, ...)
     fclose(fp);
 }
 
-
 void *page_cache_fetch(void *ptr, uint64_t page, bool *success) {
     // Hopefully this doesn't break anything
     *success = true;
 }
 
 void update_bitmap(void *opaque, uint64_t cur_loc, uint64_t cofi_addr) {
-    debug_print("cur_loc: 0x%lx\n", cur_loc);
+    xdc_debug_print("cur_loc: 0x%lx\n", cur_loc);
     cur_loc = (uint64_t)(afl_hash_ip((uint64_t)cur_loc));
     cur_loc &= (MAP_SIZE - 1);      
 
@@ -65,7 +65,7 @@ int init_decoder() {
     decoder = libxdc_init(filter, &page_cache_fetch, NULL, trace_map, MAP_SIZE);
     libxdc_register_bb_callback(decoder, update_bitmap, (void *)NULL);
     afl_prev_loc = 0;
-    debug_print("Mapped shared bitmap @ 0x%lx\n", trace_map);
+    xdc_debug_print("Mapped shared bitmap @ 0x%lx\n", trace_map);
     return 0;
 }
 
@@ -85,9 +85,9 @@ int copy_topa_buffer(char *src, size_t size) {
     }
 
     // Copy the topa buffer into the new buffer
-    debug_print("Copying 0x%lx -> 0x%lx\n", src, dst);
+    xdc_debug_print("Copying 0x%lx -> 0x%lx\n", src, dst);
     memcpy(src, dst, size);
-    debug_print("Done Copying 0x%lx -> 0x%lx\n", src, dst);
+    xdc_debug_print("Done Copying 0x%lx -> 0x%lx\n", src, dst);
 
     // Append the bytes that libxdc wants to see
     ((uint8_t*)dst)[size] = PT_TRACE_END;
@@ -100,19 +100,19 @@ int copy_topa_buffer(char *src, size_t size) {
 
     switch (ret) {
         case decoder_success:
-            debug_print("decoder_success\n");
+            xdc_debug_print("decoder_success\n");
             return 0;
         case decoder_success_pt_overflow:
-            debug_print("decoder_success_pt_overflow\n");
+            xdc_debug_print("decoder_success_pt_overflow\n");
             return 0;
         case decoder_page_fault:        
-            debug_print("decoder_page_fault\n");
+            xdc_debug_print("decoder_page_fault\n");
             return 1;
         case decoder_error:             
-            debug_print("decoder_error\n");
+            xdc_debug_print("decoder_error\n");
             return 2;
         case decoder_unkown_packet:     
-            debug_print("decoder_unkown_packet\n");
+            xdc_debug_print("decoder_unkown_packet\n");
             return 3;
     }
 
