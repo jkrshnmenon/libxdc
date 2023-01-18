@@ -58,7 +58,13 @@ struct vmx_pt_filter_iprs {
 #define TOPA_FALLBACK_SIZE				((1 << TOPA_FALLBACK_ORDER)*(1 << PAGE_SHIFT))
 #define TOPA_SIZE 						(TOPA_MAIN_SIZE + TOPA_FALLBACK_SIZE)
 */
+
+//Debug support 
 void enable_kvm_debug();
 void kvm_debug_print(char *fmt, ...);
+
+// Initialize KVM-PT
 int init_kafl_pt(int);
+
+// Should be called when the KVM_EXIT_KAFL_TOPA_MAIN_FULL is hit
 int clear_topa_buffer();

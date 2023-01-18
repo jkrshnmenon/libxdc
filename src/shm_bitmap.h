@@ -32,6 +32,9 @@ void update_bitmap(void *, uint64_t, uint64_t);
 // This shared memory page will be used to sync the bitmap.
 int create_shared_bitmap();
 
+// This function will be invoked to initialize the decoder
+int init_decoder();
+
 // This function will be invoked by firecracker to copy the topa buffer
 // It is also responsible for generating the bitmap from the PT packet buffer
 int copy_topa_buffer(char *src, size_t size);
