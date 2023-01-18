@@ -28,7 +28,7 @@ void kvm_debug_print(char * fmt, ...)
 {
     if (kvm_debug == false)
         return;
-    FILE *fp = fopen("/tmp/xdc_log", "a");
+    FILE *fp = fopen("/tmp/kvm_log", "a");
     va_list argptr;
     va_start(argptr,fmt);
     vfprintf(fp, fmt, argptr);
