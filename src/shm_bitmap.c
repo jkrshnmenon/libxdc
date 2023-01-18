@@ -2,7 +2,7 @@
 #include "afl_hash.h"
 
 bool xdc_debug = false;
-char *trace_map = &dummy;
+char *trace_map = (char *)&dummy;
 
 void enable_xdc_debug() {
     FILE *fp = fopen("/tmp/xdc_log", "w");
@@ -27,15 +27,14 @@ void *page_cache_fetch(void *ptr, uint64_t page, bool *success) {
     *success = true;
 }
 
-void update_bitmap(void *opaque, uint64_t cur_loc, uint64_t cofi_addr) {
-    xdc_debug_print("cur_loc: 0x%lx\n", cur_loc);
-    cur_loc = (uint64_t)(afl_hash_ip((uint64_t)cur_loc));
-    cur_loc &= (MAP_SIZE - 1);      
+static void update_bitmap(void *opaque, uint64_t src, uint64_t dst) {
+    xdc_debug_print("update_bitmap: [src] 0x%lx -> [dst] 0x%lx\n", src, dst);
 
-    uint64_t afl_idx = cur_loc ^ afl_prev_loc;
+    uint64_t prev_loc = (uint64_t)(afl_hash_ip(src)) & (MAP_SIZE - 1);
+    uint64_t cur_loc = (uint64_t)(afl_hash_ip(dst)) & (MAP_SIZE - 1);
+
+    uint64_t afl_idx = cur_loc ^ (prev_loc >> 1);
     trace_map[afl_idx]++;
-
-    afl_prev_loc = cur_loc >> 1;    
 }
 
 int create_shared_bitmap() {
@@ -63,8 +62,10 @@ int init_decoder() {
     uint64_t filter[4][2] = {0};
     memset(trace_map, 0, MAP_SIZE);
     decoder = libxdc_init(filter, &page_cache_fetch, NULL, trace_map, MAP_SIZE);
-    libxdc_register_bb_callback(decoder, update_bitmap, (void *)NULL);
-    afl_prev_loc = 0;
+    libxdc_enable_tracing(decoder);
+    libxdc_register_edge_callback(decoder, &update_bitmap, (void *)NULL);
+    // libxdc_register_bb_callback(decoder, update_bitmap, (void *)NULL);
+    // afl_prev_loc = 0;
     xdc_debug_print("Mapped shared bitmap @ 0x%lx\n", trace_map);
     return 0;
 }

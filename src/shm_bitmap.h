@@ -15,7 +15,6 @@
 
 char dummy[MAP_SIZE];
 libxdc_t* decoder;
-uint64_t afl_prev_loc;
 
 
 // Debug support
@@ -26,7 +25,7 @@ void xdc_debug_print(char *fmt, ...);
 void *page_cache_fetch(void *, uint64_t, bool *);
 
 // A function that's going to be invoked on each bb
-void update_bitmap(void *, uint64_t, uint64_t);
+static void update_bitmap(void *, uint64_t, uint64_t);
 
 // This function will be invoked by afl_sync to create a shared memory page
 // This shared memory page will be used to sync the bitmap.
