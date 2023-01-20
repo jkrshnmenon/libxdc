@@ -59,8 +59,11 @@ int init_kafl_pt(int vcpufd) {
         return -1;
     }
     kvm_debug_print("init_kafl_pt: topa_buffer = 0x%lx\n", topa_buffer);
+    return 0;
+}
 
-    ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE, (unsigned long)0);
+int enable_kafl_pt() {
+    int ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE, (unsigned long)0);
     if ( ret == -1 ){
         perror("ioctl(KVM_VMX_PT_ENABLE): ");
         return -1;
@@ -69,6 +72,29 @@ int init_kafl_pt(int vcpufd) {
     kvm_debug_print("init_kafl_pt: Enabled KVM-PT\n");
     return 0;
 }
+
+
+int add_ip_filter(uint64_t start, uint64_t end) {
+    struct vmx_pt_filter_iprs filter_iprs;
+    filter_iprs.a = start;
+    filter_iprs.b = end;
+
+    /* Set up ADDR0 IP filtering */
+    int ret = ioctl(vmx_pt_fd, KVM_VMX_PT_CONFIGURE_ADDR0, &filter_iprs);
+    if (ret == -1){
+         perror("ioctl(KVM_VMX_PT_CONFIGURE_ADDR0): ");
+         return -1;
+    }
+
+    /* Enable ADDR0 IP filtering (trace only 0x1000 - 0x100a) */
+    ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE_ADDR0, (unsigned long)0);
+    if (ret == -1){
+         perror("ioctl(KVM_VMX_PT_ENABLE_ADDR0): ");
+         return -1;
+    }
+    return 0;
+}
+
 
 int clear_topa_buffer() {
     int topa_size;

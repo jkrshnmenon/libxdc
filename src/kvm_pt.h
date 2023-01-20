@@ -66,5 +66,11 @@ void kvm_debug_print(char *fmt, ...);
 // Initialize KVM-PT
 int init_kafl_pt(int);
 
+// Enable KVM-PT
+int enable_kafl_pt();
+
+// Add IP filters
+int add_ip_filter(uint64_t, uint64_t);
+
 // Should be called when the KVM_EXIT_KAFL_TOPA_MAIN_FULL is hit
 int clear_topa_buffer();
