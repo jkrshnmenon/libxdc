@@ -64,7 +64,7 @@ int init_kafl_pt(int vcpufd) {
 
 int enable_kafl_pt() {
     int ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE, (unsigned long)0);
-    if ( ret == -1 ){
+    if ( ret == -1 ) {
         perror("ioctl(KVM_VMX_PT_ENABLE): ");
         return -1;
     }
@@ -81,17 +81,36 @@ int add_ip_filter(uint64_t start, uint64_t end) {
 
     /* Set up ADDR0 IP filtering */
     int ret = ioctl(vmx_pt_fd, KVM_VMX_PT_CONFIGURE_ADDR0, &filter_iprs);
-    if (ret == -1){
+    if (ret == -1) {
          perror("ioctl(KVM_VMX_PT_CONFIGURE_ADDR0): ");
          return -1;
     }
 
-    /* Enable ADDR0 IP filtering (trace only 0x1000 - 0x100a) */
+    /* Enable ADDR0 IP filtering */
     ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE_ADDR0, (unsigned long)0);
-    if (ret == -1){
+    if ( ret == -1 ) {
          perror("ioctl(KVM_VMX_PT_ENABLE_ADDR0): ");
          return -1;
     }
+    return 0;
+}
+
+
+int add_cr3_filter(uint64_t cr3) {
+    struct vmx_pt_multi_cr3 filter_cr3s;
+    filter_cr3s.cr3_0 = cr3;
+    int ret = ioctl(vmx_pt_fd, KVM_VMX_PT_CONFIGURE_MULTI_CR3, &filter_cr3s);
+    if ( ret == -1 ) {
+	    perror("ioctl(KVM_VMX_PT_CONFIGURE_MULTI_CR3): ");
+	    return -1;
+    }
+
+    ret = ioctl(vmx_pt_fd, KVM_VMX_PT_ENABLE_MULTI_CR3, (unsigned long)0);
+    if ( ret == -1 ) {
+	    perror("ioctl(KVM_VMX_PT_ENABLE_MULTI_CR3): ");
+	    return -1;
+    }
+
     return 0;
 }
 

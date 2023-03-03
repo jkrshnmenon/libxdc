@@ -30,6 +30,10 @@
 
 #define KVM_VMX_PT_GET_ADDRN				_IO(KVMIO,	0xe9)
 
+#define KVM_VMX_PT_CONFIGURE_MULTI_CR3			_IOW(KVMIO,	0xea, __u64)	/* setup CR3 filtering value */
+#define KVM_VMX_PT_ENABLE_MULTI_CR3				_IO(KVMIO,	0xeb)			/* enable CR3 filtering */
+#define KVM_VMX_PT_DISABLE_MULTI_CR3			_IO(KVMIO,	0xec)			/* disable CR3 filtering */
+
 #define KVM_CAP_NYX_PT 512
 #define KVM_CAP_NYX_FDL 513
 
@@ -48,6 +52,14 @@
 struct vmx_pt_filter_iprs {
 	__u64 a;
 	__u64 b;
+};
+
+struct vmx_pt_multi_cr3 {
+	__u64 cr3_0;
+	__u64 cr3_1;
+	__u64 cr3_2;
+	__u64 cr3_3;
+	__u8  num;
 };
 
 /*
